@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://example.com/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:locale" content="en_US">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-opencv-video" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2022/06/25/opencv-video/" class="article-date">
+  <time class="dt-published" datetime="2022-06-25T14:01:49.000Z" itemprop="datePublished">2022-06-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2022/06/25/opencv-video/">opencv-video</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>这里主要是解决arm架构下opencv读取视频时出现以下问题：<br>unable to stop the stream:Inappropriate ioctl for device<br>主要的原因是交叉编译opencv时没有选择with ffmpeg或者即使选择了在编译时未找到ffmpeg</p>
+<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><h3 id="1-交叉编译x264，原因是ffmpeg依赖x264"><a href="#1-交叉编译x264，原因是ffmpeg依赖x264" class="headerlink" title="1.交叉编译x264，原因是ffmpeg依赖x264"></a>1.交叉编译x264，原因是ffmpeg依赖x264</h3><p>下载版本x264-snapshot-20180101-2245-stable,最新版本可能存在编译问题</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ wget https://ftp.videolan.org/pub/x264/snapshots/x264-snapshot-20180101-2245-stable.tar.bz2 --no-check-certificate</span><br></pre></td></tr></table></figure>
+<p>解压 cd, 后命令行export PATH&#x3D;$PATH:(arm-gcc目录)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">./configure  --cross-prefix=arm-ca9-linux-gnueabihf- --host=arm-ca9-linux-gnueabihf --prefix=`<span class="built_in">pwd</span>`/build --enable-shared </span><br><span class="line">make</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-交叉编译ffmpeg-注意版本，特别是要和opencv版本之间对齐，最好选择旧的版本"><a href="#2-交叉编译ffmpeg-注意版本，特别是要和opencv版本之间对齐，最好选择旧的版本" class="headerlink" title="2.交叉编译ffmpeg,注意版本，特别是要和opencv版本之间对齐，最好选择旧的版本"></a>2.交叉编译ffmpeg,注意版本，特别是要和opencv版本之间对齐，最好选择旧的版本</h3><p>下载页面</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://ffmpeg.org/download.html<span class="comment">#releases</span></span><br></pre></td></tr></table></figure>
+<p>选择FFmpeg 2.8.17版本<br>解压cd ~&#x2F;ffmpeg-2.8.17&#x2F; (动态库需要加入enable-shared)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">./configure --prefix=~/ffmpeg/arm-ca9 --enable-static --enable-cross-compile --<span class="built_in">arch</span>=arm --target-os=linux --cc=arm-ca9-linux-gnueabihf-gcc --ranlib=arm-ca9-linux-gnueabihf-gcc-ranlib --enable-libx264 --enable-avresample --enable-gpl --enable-pthreads  --disable-stripping --ar=arm-ca9-linux-gnueabihf-ar --ld=arm-ca9-linux-gnueabihf-gcc --strip=arm-ca9-linux-gnueabihf-strip --extra-cflags=-I~/x264-master/build/include --extra-ldflags=-L~/x264-master/build/lib</span><br><span class="line">make -j8</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-交叉编opencv"><a href="#3-交叉编opencv" class="headerlink" title="3.交叉编opencv"></a>3.交叉编opencv</h3><p>编译opencv一般使用cmake-gui,并且在选择系统是一定是Linux,而不是其他包括linux<br>在这之前需要在命令行里导入上述编译ffmpeg以及x264后的pkg-config(cmake编译后对应的pc文件)<br>可以将x264的pc文件复制到ffmpeg pkgconfig对应的位置</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> LD_LIBRARY_PATH=~/ffmpeg/arm-ca9/lib:<span class="variable">$LD_LIBRARY_PATH</span></span><br><span class="line"><span class="built_in">export</span> PKG_CONFIG_PATH=~/ffmpeg/arm-ca9/lib/pkgconfig:<span class="variable">$PKG_CONFIG_PAT</span></span><br><span class="line"><span class="built_in">export</span> PKG_CONFIG_LIBDIR=~/ffmpeg/arm-ca9/lib:<span class="variable">$PKG_CONFIG_LIBDIR</span></span><br></pre></td></tr></table></figure>
+<p>当看到cmake-gui 配置log Video I&#x2F;O一栏下出现FFMPEG:  YES 即可</p>
+<p>这里会出现 FFMPEG: NO ,而主要的依赖库为YES 的问题。<br>一般是由于：RNING: Can’t build ffmpeg test code<br>解决方法：交叉编译的x264 lib include，pkg_config拷贝到ffmpeg目录下<br>         如果仍出现上述warning,打开.&#x2F;cmake&#x2F;OpenCVFindLibsVideo.cmake,修改line 261<br>         if(not __VALID_FFMPEG) -&gt; if(__VALID_FFMPEG)即可<br>同时：<br>去掉protobuf编译<br>加入build libz<br>去掉test相关(原因是opencv test.cpp无法链接ffmpeg等)<br>去掉app相关(没有用)</p>
+<h3 id="4-验证"><a href="#4-验证" class="headerlink" title="4.验证"></a>4.验证</h3><p>当链接opencv库时出现以下时：<br>Arm platform cross-compilation opencv appears undefined reference to &#96;png_init_filter_functions_neon’</p>
+<p>解决方法：</p>
+<p>打开3rdparty&#x2F;libpng&#x2F;CMakeLists.txt最上面添加</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SET(ARM 1)</span><br><span class="line">SET(ENABLE_NEON 1)</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2022/06/25/opencv-video/" data-id="cl4tycldf0000fwvhhfib0zwn" data-title="opencv-video" class="article-share-link">Share</a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-hello-world" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2022/06/21/hello-world/" class="article-date">
+  <time class="dt-published" datetime="2022-06-21T14:46:36.805Z" itemprop="datePublished">2022-06-21</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2022/06/21/hello-world/">Hello World</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2022/06/21/hello-world/" data-id="cl4oa68ty00001ovh8qeqbrnj" data-title="Hello World" class="article-share-link">Share</a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/06/">June 2022</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2022/06/25/opencv-video/">opencv-video</a>
+          </li>
+        
+          <li>
+            <a href="/2022/06/21/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2022 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
